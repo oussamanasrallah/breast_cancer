@@ -87,5 +87,6 @@ plt.show()
 
 # First exploratory hypothesis: big and asymetric tumors have a greater probability to be malign
 sns.relplot(data=data, x="symmetry_mean", y="area_mean", hue="diagnosis")
-plt.savefig('images/Do symmetry and area values help for tumor diagnonis?.png')
+# plt.savefig('images/breast_cancer05.png')
 plt.show()
+
