@@ -1,0 +1,42 @@
+---
+title: "Breast cancer screening"
+author: "Oussama Nasrallah"
+date: "2023-01-06"
+output: html_document
+---
+
+```{r}
+# Load the necessary libraries
+library(tidyverse)
+library(ggplot2)
+library(edgeR)
+
+# Load the bioinformatics data
+data <- read.delim("/Users/oussama/Documents/portfolio/oussamanasrallah.github.io/breast_cancer/RNAseq_counts.txt", header=T, row.names=1)
+
+# Perform a differential expression analysis
+dge <- DGEList(counts = data)
+dge <- calcNormFactors(dge)
+dge <- estimateDisp(dge)
+
+# Perform a negative binomial test
+fit <- glmFit(dge, design = model.matrix(~ sample))
+lrt <- glmLRT(fit)
+
+# Plot the results
+topTags(lrt)
+
+# Perform a volcano plot
+volcanoplot <- ggplot(as.data.frame(topTags(lrt)), aes(x = logFC, y = -log10(PValue))) +
+    geom_point() +
+    geom_vline(xintercept = c(-1,1), linetype = "dashed", color = "red") +
+    xlab("Log2 Fold Change") +
+    ylab("-Log10 P-value")
+volcanoplot
+
+# Perform a heatmap
+library(pheatmap)
+data_matrix <- data[,topTags(lrt)$gene_id]
+pheatmap(data_matrix, clustering_distance_rows = "euclidean", clustering_distance_cols = "euclidean", clustering_method = "ward.D2")
+```
+
